@@ -32,6 +32,7 @@ dependencies {
 
     // retrofit2
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
 
     // gson
     implementation "com.google.code.gson:gson:$gsonVersion"
