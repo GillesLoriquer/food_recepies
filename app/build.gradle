@@ -26,7 +26,8 @@ android {
 dependencies {
     def retrofitVersion = "2.8.1"
     def gsonVersion = "2.8.6"
-    def lifecycle_version = "2.2.0"
+    def lifecycleVersion = "2.2.0"
+    def supportVersion = "28.0.0"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.0.2'
@@ -43,11 +44,14 @@ dependencies {
     implementation "com.google.code.gson:gson:$gsonVersion"
 
     // ViewModel
-    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycleVersion"
 
     // LiveData
-    implementation "androidx.lifecycle:lifecycle-livedata:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-livedata:$lifecycleVersion"
 
     // annotation processor
-    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion"
+
+    // CardView
+    implementation "com.android.support:cardview-v7:$supportVersion"
 }
