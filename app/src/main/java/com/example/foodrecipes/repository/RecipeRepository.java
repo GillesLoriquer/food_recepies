@@ -1,9 +1,9 @@
 package com.example.foodrecipes.repository;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.example.foodrecipes.model.Recipe;
+import com.example.foodrecipes.network.RecipeApiClient;
 
 import java.util.List;
 
@@ -11,10 +11,10 @@ public class RecipeRepository {
 
     private static RecipeRepository instance;
 
-    private MutableLiveData<List<Recipe>> mRecipies;
+    private RecipeApiClient mRecipeApiClient;
 
-    public RecipeRepository() {
-        mRecipies = new MutableLiveData<>();
+    private RecipeRepository() {
+        mRecipeApiClient = RecipeApiClient.getInstance();
     }
 
     public static RecipeRepository getInstance() {
@@ -25,6 +25,6 @@ public class RecipeRepository {
     }
 
     public LiveData<List<Recipe>> getRecipes() {
-        return mRecipies;
+        return mRecipeApiClient.getRecipies();
     }
 }
