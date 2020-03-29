@@ -3,11 +3,14 @@ package com.example.foodrecipes;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.lifecycle.ViewModelProvider;
+
 import com.example.foodrecipes.model.Recipe;
 import com.example.foodrecipes.network.RecipeApi;
 import com.example.foodrecipes.network.ServiceGenerator;
 import com.example.foodrecipes.network.response.RecipeResponse;
 import com.example.foodrecipes.network.response.RecipeSearchResponse;
+import com.example.foodrecipes.viewmodel.RecipeListViewModel;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,12 +23,22 @@ public class RecipeListActivity extends BaseActivity {
 
     private static final String TAG = "RecipeListActivity";
 
+    private RecipeListViewModel mRecipeListViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_list);
 
-        findViewById(R.id.button).setOnClickListener(v -> testRetrofitSearchRequest());
+        mRecipeListViewModel = new ViewModelProvider(this).get(RecipeListViewModel.class);
+
+        subscribeObservers();
+    }
+
+    private void subscribeObservers() {
+        mRecipeListViewModel.getRecipes().observe(this, recipes -> {
+            // Update UI
+        });
     }
 
     private void testRetrofitSearchRequest() {
