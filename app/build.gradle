@@ -54,4 +54,7 @@ dependencies {
 
     // CardView
     implementation "com.android.support:cardview-v7:$supportVersion"
+
+    // RecyclerView
+    implementation "com.android.support:recyclerview-v7:$supportVersion"
 }
