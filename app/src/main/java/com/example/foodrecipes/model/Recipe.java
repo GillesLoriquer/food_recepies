@@ -58,6 +58,31 @@ public class Recipe implements Parcelable {
         return socialRank;
     }
 
+    // Setters
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public void setIngredients(List<String> ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    public void setRecipeId(String recipeId) {
+        this.recipeId = recipeId;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public void setSocialRank(Double socialRank) {
+        this.socialRank = socialRank;
+    }
+
     @Override
     public String toString() {
         return "Recipe{" +
