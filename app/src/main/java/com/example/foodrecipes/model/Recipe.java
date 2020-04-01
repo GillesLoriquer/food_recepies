@@ -22,6 +22,7 @@ public class Recipe implements Parcelable {
 
     // Constructors
     public Recipe() {
+        this.socialRank = 0.0D;
     }
 
     public Recipe(String title, String publisher, List<String> ingredients, String recipeId, String imageUrl, Double socialRank) {
