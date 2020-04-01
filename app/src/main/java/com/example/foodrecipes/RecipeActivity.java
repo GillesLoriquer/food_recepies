@@ -1,7 +1,8 @@
 package com.example.foodrecipes;
 
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -10,6 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.foodrecipes.model.Recipe;
 import com.example.foodrecipes.viewmodel.RecipeViewModel;
 
@@ -39,6 +42,8 @@ public class RecipeActivity extends BaseActivity {
 
         mRecipeViewModel = new ViewModelProvider(this).get(RecipeViewModel.class);
 
+        showProgressBar(true);
+
         subscribeObservers();
 
         getIncomingIntent();
@@ -46,12 +51,8 @@ public class RecipeActivity extends BaseActivity {
 
     private void subscribeObservers() {
         mRecipeViewModel.getRecipe().observe(this, recipe -> {
-            if (recipe != null) {
-                Log.d(TAG, "subscribeObservers: ----------------------------------------");
-                Log.d(TAG, "subscribeObservers: " + recipe.getTitle());
-                for (String ingredient : recipe.getIngredients()) {
-                    Log.d(TAG, "subscribeObservers: " + ingredient);
-                }
+            if (recipe != null && recipe.getRecipeId().equals(mRecipeViewModel.getRecipeId())) {
+                setRecipeProperties(recipe);
             }
         });
     }
@@ -61,5 +62,37 @@ public class RecipeActivity extends BaseActivity {
             Recipe recipe = getIntent().getParcelableExtra(RECIPE);
             mRecipeViewModel.searchRecipeApi(recipe.getRecipeId());
         }
+    }
+
+    private void setRecipeProperties(Recipe recipe) {
+        if (recipe != null) {
+            RequestOptions requestOptions = new RequestOptions()
+                    .placeholder(R.drawable.ic_launcher_background);
+            Glide.with(this)
+                    .setDefaultRequestOptions(requestOptions)
+                    .load(recipe.getImageUrl())
+                    .into(mRecipeImage);
+
+            mRecipeTitle.setText(recipe.getTitle());
+
+            mRecipeRank.setText(String.valueOf(Math.round(recipe.getSocialRank())));
+
+            mRecipeIngredientsContainer.removeAllViews();
+            for (String ingredient : recipe.getIngredients()) {
+                TextView textView = new TextView(this);
+                textView.setText(ingredient);
+                textView.setTextSize(15);
+                textView.setLayoutParams(new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+                ));
+                mRecipeIngredientsContainer.addView(textView);
+            }
+            showProgressBar(false);
+            showParent();
+        }
+    }
+
+    private void showParent() {
+        mScrollView.setVisibility(View.VISIBLE);
     }
 }
