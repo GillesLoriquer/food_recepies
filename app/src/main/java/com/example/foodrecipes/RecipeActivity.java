@@ -1,6 +1,7 @@
 package com.example.foodrecipes;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -51,8 +52,16 @@ public class RecipeActivity extends BaseActivity {
 
     private void subscribeObservers() {
         mRecipeViewModel.getRecipe().observe(this, recipe -> {
-            if (recipe != null && recipe.getRecipeId().equals(mRecipeViewModel.getRecipeId())) {
+            if (recipe != null
+                    && recipe.getRecipeId().equals(mRecipeViewModel.getRecipeId())) {
                 setRecipeProperties(recipe);
+                mRecipeViewModel.setDidRetrieveRecipe(true);
+            }
+        });
+        mRecipeViewModel.isRecipeRequestTimeout().observe(this, isRecipeRequestTimeout -> {
+            if (isRecipeRequestTimeout && !mRecipeViewModel.getDidRetrieveRecipe()) {
+                // TODO : show user timeout
+                Log.d(TAG, "subscribeObservers: recipe request timeout");
             }
         });
     }

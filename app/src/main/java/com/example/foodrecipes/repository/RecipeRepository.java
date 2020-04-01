@@ -54,4 +54,8 @@ public class RecipeRepository {
     public void cancelRequest() {
         mRecipeApiClient.cancelRequest();
     }
+
+    public LiveData<Boolean> isRecipeRequestTimeout() {
+        return mRecipeApiClient.isRecipeRequestTimeout();
+    }
 }
