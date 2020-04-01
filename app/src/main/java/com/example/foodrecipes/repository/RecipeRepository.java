@@ -32,4 +32,8 @@ public class RecipeRepository {
         pageNumber = pageNumber == 0 ? 1 : pageNumber;  // pageNumber ne peut pas être 0
         mRecipeApiClient.searchRecipesApi(query, pageNumber);
     }
+
+    public void cancelRequest() {
+        mRecipeApiClient.cancelRequest();
+    }
 }
