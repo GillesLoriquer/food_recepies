@@ -100,7 +100,7 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         return RECIPE_TYPE;
     }
 
-    public void displayCategory() {
+    public void displayCategories() {
         List<Recipe> categories = new ArrayList<>();
         for (int i = 0; i < Constants.DEFAULT_SEARCH_CATEGORIES.length; i++) {
             String title = Constants.DEFAULT_SEARCH_CATEGORIES[i];
