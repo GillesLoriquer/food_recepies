@@ -1,5 +1,6 @@
 package com.example.foodrecipes;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.foodrecipes.adapter.OnRecipeListener;
 import com.example.foodrecipes.adapter.RecipeRecyclerAdapter;
+import com.example.foodrecipes.model.Recipe;
 import com.example.foodrecipes.util.VerticalSpacingItemDecorator;
 import com.example.foodrecipes.viewmodel.RecipeListViewModel;
 
@@ -111,7 +113,12 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
 
     @Override
     public void onRecipeClick(int position) {
-
+        Recipe recipe = mRecyclerAdapter.getSelectedRecipe(position);
+        if (recipe != null) {
+            Intent intent = new Intent(this, RecipeActivity.class);
+            intent.putExtra(RecipeActivity.RECIPE, recipe);
+            startActivity(intent);
+        }
     }
 
     @Override
