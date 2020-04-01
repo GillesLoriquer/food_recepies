@@ -13,7 +13,7 @@ public interface RecipeApi {
 
     // SEARCH
     @GET("api/search")
-    Call<RecipeSearchResponse> searchRecipe(
+    Call<RecipeSearchResponse> searchRecipes(
             @Query("q") String query,
             @Query("page") String page
     );
