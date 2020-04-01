@@ -23,6 +23,7 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     private static final int LOADING_TYPE = 2;
     private static final int CATEGORY_TYPE = 3;
     private static final String LOADING = "LOADING";
+    private static final String EXHAUSTED = "EXHAUSTED";
 
     private List<Recipe> mRecipeList;
     private OnRecipeListener mOnRecipeListener;
@@ -93,6 +94,10 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     @Override
     public int getItemViewType(int position) {
         if (mRecipeList.get(position).getTitle().equals(LOADING)) {
+            return LOADING_TYPE;
+        } else if (position == mRecipeList.size() - 1
+                && position != 0
+                && !mRecipeList.get(position).getTitle().equals(EXHAUSTED)) {
             return LOADING_TYPE;
         } else if (mRecipeList.get(position).getSocialRank() == -1) {
             return CATEGORY_TYPE;
