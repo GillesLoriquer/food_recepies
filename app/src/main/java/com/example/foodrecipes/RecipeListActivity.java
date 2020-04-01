@@ -1,6 +1,8 @@
 package com.example.foodrecipes;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.ViewModelProvider;
@@ -44,6 +46,22 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
         if (!mRecipeListViewModel.getIsViewingRecipes()) {
             displayCategories();
         }
+
+        setSupportActionBar(findViewById(R.id.toolbar));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_categories) {
+            displayCategories();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.recipe_search_menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     private void initRecyclerView() {
