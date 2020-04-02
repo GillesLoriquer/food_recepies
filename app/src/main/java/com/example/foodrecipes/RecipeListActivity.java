@@ -23,9 +23,13 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
      * -------------------------------- VARIABLES
      */
     private static final String TAG = "RecipeListActivity";
+
     private RecipeListViewModel mRecipeListViewModel;
+
     private RecyclerView mRecyclerView;
+
     private RecipeRecyclerAdapter mRecyclerAdapter;
+
     private SearchView mSearchView;
 
     /**
@@ -85,7 +89,6 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
     /**
      * -------------------------------- METHODS
      */
-
     private void initRecyclerView() {
         mRecyclerAdapter = new RecipeRecyclerAdapter(this);
         VerticalSpacingItemDecorator verticalSpacingItemDecorator =

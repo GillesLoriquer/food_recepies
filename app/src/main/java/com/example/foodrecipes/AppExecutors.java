@@ -1,15 +1,37 @@
 package com.example.foodrecipes;
 
+import android.os.Handler;
+import android.os.Looper;
+
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 public class AppExecutors {
 
+    /**
+     * -------------------------------- VARIABLES
+     */
     private static AppExecutors instance;
 
-    private AppExecutors() {
+    private final Executor mDiskIO = Executors.newSingleThreadExecutor();
+
+    private final Executor mMainThreadExecutor = new MainThreadExecutor();
+
+
+    /**
+     * -------------------------------- GETTERS
+     */
+    public Executor getDiskIO() {
+        return mDiskIO;
     }
 
+    public Executor getMainThreadExecutor() {
+        return mMainThreadExecutor;
+    }
+
+    /**
+     * -------------------------------- METHODS
+     */
     public static AppExecutors getInstance() {
         if (instance == null) {
             instance = new AppExecutors();
@@ -17,9 +39,15 @@ public class AppExecutors {
         return instance;
     }
 
-    private final ScheduledExecutorService mNetworkIO = Executors.newScheduledThreadPool(3);
+    /**
+     * -------------------------------- INNER CLASS
+     */
+    private class MainThreadExecutor implements Executor {
+        private Handler mainThreadHandler = new Handler(Looper.getMainLooper());
 
-    public ScheduledExecutorService getNetworkIO() {
-        return mNetworkIO;
+        @Override
+        public void execute(Runnable command) {
+            mainThreadHandler.post(command);
+        }
     }
 }
