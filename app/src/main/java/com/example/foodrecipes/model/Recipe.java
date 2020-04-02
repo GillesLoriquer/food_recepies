@@ -21,6 +21,7 @@ public class Recipe implements Parcelable {
      */
     @PrimaryKey
     @NonNull
+    @ColumnInfo(name = "recipe_id")
     @SerializedName("recipe_id")
     private String recipeId;
 

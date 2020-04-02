@@ -17,7 +17,6 @@ public class AppExecutors {
 
     private final Executor mMainThreadExecutor = new MainThreadExecutor();
 
-
     /**
      * -------------------------------- GETTERS
      */
