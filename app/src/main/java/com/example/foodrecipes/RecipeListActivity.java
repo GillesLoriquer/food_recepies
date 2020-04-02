@@ -2,11 +2,9 @@ package com.example.foodrecipes;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,19 +15,22 @@ import com.example.foodrecipes.adapter.RecipeRecyclerAdapter;
 import com.example.foodrecipes.model.Recipe;
 import com.example.foodrecipes.util.VerticalSpacingItemDecorator;
 import com.example.foodrecipes.viewmodel.RecipeListViewModel;
+import com.example.foodrecipes.viewmodel.RecipeListViewModelFactory;
 
 public class RecipeListActivity extends BaseActivity implements OnRecipeListener {
 
+    /**
+     * -------------------------------- VARIABLES
+     */
     private static final String TAG = "RecipeListActivity";
-
     private RecipeListViewModel mRecipeListViewModel;
-
     private RecyclerView mRecyclerView;
-
     private RecipeRecyclerAdapter mRecyclerAdapter;
-
     private SearchView mSearchView;
 
+    /**
+     * -------------------------------- BUILT-IN METHODS
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,19 +40,17 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
 
         mRecyclerView = findViewById(R.id.recipe_list);
 
-        mRecipeListViewModel = new ViewModelProvider(this).get(RecipeListViewModel.class);
+        mRecipeListViewModel = new ViewModelProvider(
+                this,
+                new RecipeListViewModelFactory(this.getApplication())).get(RecipeListViewModel.class);
 
         initRecyclerView();
 
-        subscribeObservers();
-
         initSearchView();
 
-        if (!mRecipeListViewModel.getIsViewingRecipes()) {
-            displayCategories();
-        }
-
         setSupportActionBar(findViewById(R.id.toolbar));
+
+        subscribeObservers();
     }
 
     @Override
@@ -68,56 +67,6 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void initRecyclerView() {
-        mRecyclerAdapter = new RecipeRecyclerAdapter(this);
-        VerticalSpacingItemDecorator verticalSpacingItemDecorator =
-                new VerticalSpacingItemDecorator(30);
-        mRecyclerView.addItemDecoration(verticalSpacingItemDecorator);
-        mRecyclerView.setAdapter(mRecyclerAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                if (!mRecyclerView.canScrollVertically(1)) {
-                    mRecipeListViewModel.searchNextPage();
-                }
-            }
-        });
-    }
-
-    private void subscribeObservers() {
-        mRecipeListViewModel.getRecipes().observe(this, recipes -> {
-            if (recipes != null && mRecipeListViewModel.getIsViewingRecipes()) {
-                //Testing.printRecepies(recipes, "RecipesTest");
-                mRecipeListViewModel.setPerformingQuery(false);
-                mRecyclerAdapter.setRecipeList(recipes);
-            }
-        });
-        mRecipeListViewModel.isQueryExhausted().observe(this, isQueryExhausted -> {
-            if (isQueryExhausted) {
-                Log.d(TAG, "subscribeObservers: query exhausted");
-                mRecyclerAdapter.setQueryExhausted();
-            }
-        });
-    }
-
-    private void initSearchView() {
-        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                mRecyclerAdapter.displayLoading();
-                mRecipeListViewModel.searchRecipesApi(query, 1);
-                mSearchView.clearFocus();
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-    }
-
     @Override
     public void onRecipeClick(int position) {
         Recipe recipe = mRecyclerAdapter.getSelectedRecipe(position);
@@ -130,21 +79,54 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
 
     @Override
     public void onCategoryClick(String category) {
-        mRecyclerAdapter.displayLoading();
-        mRecipeListViewModel.searchRecipesApi(category, 1);
-        mSearchView.clearFocus();
+
+    }
+
+    /**
+     * -------------------------------- METHODS
+     */
+
+    private void initRecyclerView() {
+        mRecyclerAdapter = new RecipeRecyclerAdapter(this);
+        VerticalSpacingItemDecorator verticalSpacingItemDecorator =
+                new VerticalSpacingItemDecorator(30);
+        mRecyclerView.addItemDecoration(verticalSpacingItemDecorator);
+        mRecyclerView.setAdapter(mRecyclerAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private void initSearchView() {
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+    }
+
+    private void subscribeObservers() {
+        mRecipeListViewModel.getViewState().observe(this, viewState -> {
+            if (viewState != null) {
+                switch (viewState) {
+                    case CATEGORIES: {
+                        displayCategories();
+                        break;
+                    }
+                    case RECIPES: {
+                        // TODO : recipes will show automatically from another observer
+                        break;
+                    }
+                }
+            }
+        });
     }
 
     private void displayCategories() {
-        mRecipeListViewModel.setIsViewingRecipes(false);
         mRecyclerAdapter.displayCategories();
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mRecipeListViewModel.onBackPressed()) {
-            super.onBackPressed();
-        }
-        displayCategories();
     }
 }

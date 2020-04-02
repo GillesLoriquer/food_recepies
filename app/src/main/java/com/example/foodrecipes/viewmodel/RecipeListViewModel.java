@@ -1,71 +1,49 @@
 package com.example.foodrecipes.viewmodel;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModel;
+import android.app.Application;
 
-import com.example.foodrecipes.model.Recipe;
-import com.example.foodrecipes.repository.RecipeRepository;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.MutableLiveData;
 
-import java.util.List;
+// AndroidViewModel permet d'accéder au context de l'application, contrairement au ViewModel
+public class RecipeListViewModel extends AndroidViewModel {
 
-public class RecipeListViewModel extends ViewModel {
+    /**
+     * -------------------------------- VARIABLES
+     */
+    private static final String TAG = "RecipeListViewModel";
 
-    private RecipeRepository mRecipeRepository;
-    private boolean mIsViewingRecipes;
-    private boolean mIsPerformingQuery;
+    public enum ViewState {CATEGORIES, RECIPES}
 
-    public RecipeListViewModel() {
-        mRecipeRepository = RecipeRepository.getInstance();
-        mIsPerformingQuery = false;
+    private MutableLiveData<ViewState> mViewState;
+
+    /**
+     * -------------------------------- CONSTRUCTOR
+     */
+    public RecipeListViewModel(@NonNull Application application) {
+        super(application);
+        init();
     }
 
-    public LiveData<List<Recipe>> getRecipes() {
-        return mRecipeRepository.getRecipes();
+    /**
+     * -------------------------------- GETTERS
+     */
+    public MutableLiveData<ViewState> getViewState() {
+        return mViewState;
     }
 
-    public void searchRecipesApi(String query, int pageNumber) {
-        mIsViewingRecipes = true;
-        mIsPerformingQuery = true;
-        mRecipeRepository.searchRecipesApi(query, pageNumber);
-    }
+    /**
+     * -------------------------------- SETTERS
+     */
 
-    public void searchNextPage() {
-        if (!mIsPerformingQuery
-                && mIsViewingRecipes
-                && !isQueryExhausted().getValue()) {
-            mRecipeRepository.searchNextPage();
+    /**
+     * -------------------------------- METHODS
+     */
+    private void init() {
+        if (mViewState == null) {
+            mViewState = new MutableLiveData<>();
+            mViewState.setValue(ViewState.CATEGORIES);
         }
-    }
-
-    public LiveData<Boolean> isQueryExhausted() {
-        return mRecipeRepository.isQueryExhausted();
-    }
-
-    public boolean getIsViewingRecipes() {
-        return mIsViewingRecipes;
-    }
-
-    public void setIsViewingRecipes(boolean isViewingRecipe) {
-        this.mIsViewingRecipes = isViewingRecipe;
-    }
-
-    public boolean onBackPressed() {
-        if (mIsPerformingQuery) {
-            mRecipeRepository.cancelRequest();
-            mIsPerformingQuery = false;
-        }
-        if (mIsViewingRecipes) {
-            mIsViewingRecipes = false;
-            return false;
-        }
-        return true;
-    }
-
-    public boolean isPerformingQuery() {
-        return mIsPerformingQuery;
-    }
-
-    public void setPerformingQuery(boolean performingQuery) {
-        mIsPerformingQuery = performingQuery;
     }
 }
