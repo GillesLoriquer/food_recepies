@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 
 import com.example.foodrecipes.AppExecutors;
 import com.example.foodrecipes.model.Recipe;
+import com.example.foodrecipes.network.ServiceGenerator;
 import com.example.foodrecipes.network.response.ApiResponse;
 import com.example.foodrecipes.network.response.RecipeSearchResponse;
 import com.example.foodrecipes.persistence.RecipeDao;
@@ -68,7 +69,8 @@ public class RecipeRepository {
             @NonNull
             @Override
             protected LiveData<ApiResponse<RecipeSearchResponse>> createCall() {
-                return null;
+                return ServiceGenerator.getRecipeApi()
+                        .searchRecipes(query, String.valueOf(pageNumber));
             }
         }.getAsLiveData();
     }
