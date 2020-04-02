@@ -24,7 +24,7 @@ public class LiveDataCallAdapterFactory extends CallAdapter.Factory {
     public CallAdapter<?, ?> get(Type returnType, Annotation[] annotations, Retrofit retrofit) {
 
         // Check #1
-        // Make sur the CallAdapter is returning a type of LiveData
+        // Make sure the CallAdapter is returning a type of LiveData
         if (CallAdapter.Factory.getRawType(returnType) != LiveData.class) {
             return null;
         }
