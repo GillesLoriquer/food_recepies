@@ -16,6 +16,9 @@ public class RecipeSearchResponse {
     @Expose
     private List<Recipe> recipes;
 
+    @Expose
+    private String error;
+
     public int getCount() {
         return count;
     }
@@ -24,11 +27,16 @@ public class RecipeSearchResponse {
         return recipes;
     }
 
+    public String getError() {
+        return error;
+    }
+
     @Override
     public String toString() {
         return "RecipeSearchResponse{" +
                 "count=" + count +
                 ", recipes=" + recipes +
+                ", error='" + error + '\'' +
                 '}';
     }
 }

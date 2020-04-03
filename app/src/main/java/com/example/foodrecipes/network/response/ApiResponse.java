@@ -15,6 +15,16 @@ public class ApiResponse<T> {
         if (response.isSuccessful()) {
             T body = response.body();
 
+            if (body instanceof RecipeSearchResponse
+                    && !CheckRecipeApiKey.isRecipeApiKeyValid((RecipeSearchResponse) body)) {
+                return new ApiErrorResponse<>("Api key is expired of invalid");
+            }
+
+            if (body instanceof RecipeResponse
+                    && !CheckRecipeApiKey.isRecipeApiKeyValid((RecipeResponse) body)) {
+                return new ApiErrorResponse<>("Api key is expired of invalid");
+            }
+
             // 204 : empty response
             if (body == null || response.code() == 204) {
                 return new ApiEmptyResponse<>();
