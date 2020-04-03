@@ -43,6 +43,8 @@ public class RecipeListViewModel extends AndroidViewModel {
 
     private boolean mCancelRequest;
 
+    private long mRequestStartTime;
+
     /**
      * -------------------------------- CONSTRUCTOR
      */
@@ -91,6 +93,7 @@ public class RecipeListViewModel extends AndroidViewModel {
     }
 
     private void executeSearch() {
+        mRequestStartTime = System.currentTimeMillis();
         this.mCancelRequest = false;
         this.mIsPerformingQuery = true;
         this.mViewState.setValue(ViewState.RECIPES);
@@ -103,6 +106,7 @@ public class RecipeListViewModel extends AndroidViewModel {
                 if (listResource != null) {
                     this.mRecipes.setValue(listResource);
                     if (listResource.status == Resource.Status.SUCCESS) {
+                        Log.d(TAG, "executeSearch: REQUEST TIME: " + (System.currentTimeMillis() - mRequestStartTime) / 1000 + " seconds.");
                         this.mIsPerformingQuery = false;
                         if (listResource.data != null) {
                             if (listResource.data.size() == 0) {
@@ -118,6 +122,7 @@ public class RecipeListViewModel extends AndroidViewModel {
                         }
                         this.mRecipes.removeSource(repositoryDataSource);
                     } else if (listResource.status == Resource.Status.ERROR) {
+                        Log.d(TAG, "executeSearch: REQUEST TIME: " + (System.currentTimeMillis() - mRequestStartTime) / 1000 + " seconds.");
                         this.mIsPerformingQuery = false;
                         this.mRecipes.removeSource(repositoryDataSource);
                     }
