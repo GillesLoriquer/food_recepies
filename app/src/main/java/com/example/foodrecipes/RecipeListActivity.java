@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -101,8 +102,20 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
         VerticalSpacingItemDecorator verticalSpacingItemDecorator =
                 new VerticalSpacingItemDecorator(30);
         mRecyclerView.addItemDecoration(verticalSpacingItemDecorator);
-        mRecyclerView.setAdapter(mRecyclerAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                // si l'utilisateur regarde des recettes && qu'il ne peut plus scroller verticalement (fin de liste)
+                if (!(mRecipeListViewModel.getViewState().getValue() == RecipeListViewModel.ViewState.CATEGORIES)
+                        && !mRecyclerView.canScrollVertically(1)) {
+                    mRecipeListViewModel.searchNextPage();
+                }
+            }
+        });
+        mRecyclerView.setAdapter(mRecyclerAdapter);
     }
 
     private RequestManager getRequestManager() {
@@ -185,7 +198,9 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
     }
 
     private void searchRecipesApi(String query) {
+        mRecyclerView.smoothScrollToPosition(0); // évite la selection en surbrillance d'un élément de la liste
         mRecipeListViewModel.searchRecipesApi(query, 1);
+        mSearchView.clearFocus();
     }
 
     private void displayCategories() {

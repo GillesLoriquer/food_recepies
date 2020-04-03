@@ -122,4 +122,11 @@ public class RecipeListViewModel extends AndroidViewModel {
             }
         });
     }
+
+    public void searchNextPage() {
+        if (!mIsPerformingQuery && !mIsQueryExhausted) {
+            this.mPageNumber++;
+            executeSearch();
+        }
+    }
 }
