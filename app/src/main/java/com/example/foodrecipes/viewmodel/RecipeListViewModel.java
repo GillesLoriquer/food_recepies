@@ -129,4 +129,8 @@ public class RecipeListViewModel extends AndroidViewModel {
             executeSearch();
         }
     }
+
+    public void setViewCategories() {
+        this.mViewState.setValue(ViewState.CATEGORIES);
+    }
 }
