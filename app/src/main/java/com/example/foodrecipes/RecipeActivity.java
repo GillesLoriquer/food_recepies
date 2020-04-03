@@ -1,8 +1,8 @@
 package com.example.foodrecipes;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -11,10 +11,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.example.foodrecipes.model.Recipe;
 import com.example.foodrecipes.viewmodel.RecipeViewModel;
+import com.example.foodrecipes.viewmodel.RecipeViewModelFactory;
 
 public class RecipeActivity extends BaseActivity {
 
@@ -40,56 +39,48 @@ public class RecipeActivity extends BaseActivity {
         mRecipeIngredientsContainer = findViewById(R.id.ingredients_container);
         mScrollView = findViewById(R.id.parent_scrollview);
 
-        mRecipeViewModel = new ViewModelProvider(this).get(RecipeViewModel.class);
+        mRecipeViewModel = new ViewModelProvider(
+                this,
+                new RecipeViewModelFactory(this.getApplication())).get(RecipeViewModel.class);
 
-        showProgressBar(true);
+        getIncomingIntent();
     }
 
-    private void showErrorScreen(String errorMessage) {
-        mRecipeTitle.setText("Error retrieving recipe...");
-        mRecipeRank.setText("");
-        TextView textView = new TextView(this);
-        textView.setText(errorMessage.equals("") ? "Error" : errorMessage);
-        textView.setTextSize(15);
-        textView.setLayoutParams(new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
-        ));
-        mRecipeIngredientsContainer.addView(textView);
-
-        Glide.with(this)
-                .load(R.drawable.ic_launcher_background)
-                .into(mRecipeImage);
-
-        showProgressBar(false);
-        showParent();
-    }
-
-    private void setRecipeProperties(Recipe recipe) {
-        if (recipe != null) {
-            RequestOptions requestOptions = new RequestOptions()
-                    .placeholder(R.drawable.ic_launcher_background);
-            Glide.with(this)
-                    .setDefaultRequestOptions(requestOptions)
-                    .load(recipe.getImageUrl())
-                    .into(mRecipeImage);
-
-            mRecipeTitle.setText(recipe.getTitle());
-
-            mRecipeRank.setText(String.valueOf(Math.round(recipe.getSocialRank())));
-
-            mRecipeIngredientsContainer.removeAllViews();
-            for (String ingredient : recipe.getIngredients()) {
-                TextView textView = new TextView(this);
-                textView.setText(ingredient);
-                textView.setTextSize(15);
-                textView.setLayoutParams(new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
-                ));
-                mRecipeIngredientsContainer.addView(textView);
-            }
-            showProgressBar(false);
-            showParent();
+    private void getIncomingIntent() {
+        if (getIntent().hasExtra(RECIPE)) {
+            Recipe recipe = getIntent().getParcelableExtra(RECIPE);
+            Log.d(TAG, "getIncomingIntent: " + recipe.getTitle());
+            subscribeObservers(recipe.getRecipeId());
         }
+    }
+
+    private void subscribeObservers(final String recipeId) {
+        mRecipeViewModel.searchRecipeApi(recipeId).observe(this, recipeResource -> {
+            if (recipeResource != null) {
+                if (recipeResource.data != null) {
+                    switch (recipeResource.status) {
+                        case LOADING: {
+                            showProgressBar(true);
+                            break;
+                        }
+                        case ERROR: {
+                            Log.d(TAG, "subscribeObservers: status : ERROR, recipe: " + recipeResource.data.getTitle());
+                            Log.d(TAG, "subscribeObservers: ERROR message: " + recipeResource.data.getTitle());
+                            showParent();
+                            showProgressBar(false);
+                            break;
+                        }
+                        case SUCCESS: {
+                            Log.d(TAG, "subscribeObservers: cache has been refreshed.");
+                            Log.d(TAG, "subscribeObservers: SUCCESS, recipe: " + recipeResource.data.getTitle());
+                            showParent();
+                            showProgressBar(false);
+                            break;
+                        }
+                    }
+                }
+            }
+        });
     }
 
     private void showParent() {

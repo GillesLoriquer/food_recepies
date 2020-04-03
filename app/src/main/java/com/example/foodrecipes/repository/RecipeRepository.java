@@ -99,7 +99,7 @@ public class RecipeRepository {
         }.getAsLiveData();
     }
 
-    public LiveData<Resource<Recipe>> searchRecipesApi(final String recipeId) {
+    public LiveData<Resource<Recipe>> searchRecipeApi(final String recipeId) {
         return new NetworkBoundResource<Recipe, RecipeResponse>(AppExecutors.getInstance()) {
             @Override
             protected void saveCallResult(@NonNull RecipeResponse item) {
@@ -112,16 +112,16 @@ public class RecipeRepository {
             @Override
             protected boolean shouldFetch(@Nullable Recipe data) {
                 Log.d(TAG, "shouldFetch: recipe: " + data.toString());
-                int currentTime = (int) (System.currentTimeMillis()) / 1000;
+                int currentTime = (int) (System.currentTimeMillis() / 1000);
                 Log.d(TAG, "shouldFetch: current time: " + currentTime);
                 int lastRefresh = data.getTimestamp();
                 Log.d(TAG, "shouldFetch: last refresh: " + lastRefresh);
-                int intervalTimeInDays = (currentTime - lastRefresh) / 60 / 60 / 24;
+                int intervalTimeInSecondes = (currentTime - lastRefresh);
                 Log.d(TAG, "shouldFetch: it's been "
-                        + intervalTimeInDays
+                        + (intervalTimeInSecondes / 60 / 60 / 24)
                         + " days since this recipe was refreshed");
 
-                if (intervalTimeInDays >= RECIPE_REFRESH_TIME) {
+                if (intervalTimeInSecondes >= RECIPE_REFRESH_TIME) {
                     Log.d(TAG, "shouldFetch: last refresh >= 30 days, should update");
                     return true;
                 }
