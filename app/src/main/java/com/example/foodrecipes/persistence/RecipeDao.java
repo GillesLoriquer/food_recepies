@@ -34,5 +34,5 @@ public interface RecipeDao {
     LiveData<List<Recipe>> searchRecipes(String query, int pageNumber);
 
     @Query("SELECT * FROM recipes WHERE recipe_id = :recipeId")
-    LiveData<Recipe> getRecipe(int recipeId);
+    LiveData<Recipe> getRecipe(String recipeId);
 }
