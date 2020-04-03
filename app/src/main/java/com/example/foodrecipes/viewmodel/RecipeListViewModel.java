@@ -23,7 +23,7 @@ public class RecipeListViewModel extends AndroidViewModel {
      */
     private static final String TAG = "RecipeListViewModel";
 
-    private static final String QUERY_EXHAUSTED = "No more result.";
+    public static final String QUERY_EXHAUSTED = "No more result.";
 
     public enum ViewState {CATEGORIES, RECIPES}
 
@@ -59,6 +59,10 @@ public class RecipeListViewModel extends AndroidViewModel {
 
     public LiveData<Resource<List<Recipe>>> getRecipes() {
         return mRecipes;
+    }
+
+    public int getPageNumber() {
+        return mPageNumber;
     }
 
     /**

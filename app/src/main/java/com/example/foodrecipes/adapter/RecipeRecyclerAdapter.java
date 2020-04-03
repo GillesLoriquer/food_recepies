@@ -19,20 +19,35 @@ import java.util.List;
 
 public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    /**
+     * -------------------------------- VARIABLES
+     */
     private static final int RECIPE_TYPE = 1;
+
     private static final int LOADING_TYPE = 2;
+
     private static final int CATEGORY_TYPE = 3;
+
     private static final int EXHAUSTED_TYPE = 4;
+
     private static final String LOADING = "LOADING";
+
     private static final String EXHAUSTED = "EXHAUSTED";
 
     private List<Recipe> mRecipeList;
+
     private OnRecipeListener mOnRecipeListener;
 
+    /**
+     * -------------------------------- CONSTRUCTOR
+     */
     public RecipeRecyclerAdapter(OnRecipeListener onRecipeListener) {
         mOnRecipeListener = onRecipeListener;
     }
 
+    /**
+     * -------------------------------- BUILT-IN METHODS
+     */
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -105,10 +120,6 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             return LOADING_TYPE;
         } else if (mRecipeList.get(position).getTitle().equals(EXHAUSTED)) {
             return EXHAUSTED_TYPE;
-        } else if (position == mRecipeList.size() - 1
-                && position != 0
-                && !mRecipeList.get(position).getTitle().equals(EXHAUSTED)) {
-            return LOADING_TYPE;
         }
         return RECIPE_TYPE;
     }
@@ -118,23 +129,48 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         return mRecipeList != null ? mRecipeList.size() : 0;
     }
 
+    /**
+     * -------------------------------- METHODS
+     */
+    // display loading during request
+    public void displayOnlyLoading() {
+        clearRecipesList();
+        Recipe recipe = new Recipe();
+        recipe.setTitle(LOADING);
+        this.mRecipeList.add(recipe);
+        notifyDataSetChanged();
+    }
+
+    // pagination loading
+    public void displayLoading() {
+        if (this.mRecipeList == null) {
+            this.mRecipeList = new ArrayList<>();
+        }
+        if (!isLoading()) {
+            Recipe recipe = new Recipe();
+            recipe.setTitle(LOADING);
+            this.mRecipeList.add(recipe);
+            notifyDataSetChanged();
+        }
+    }
+
+    public void hideLoading() {
+        if (isLoading()) {
+            if (this.mRecipeList.get(0).getTitle().equals(LOADING)) {
+                this.mRecipeList.remove(0);
+            } else if (this.mRecipeList.get(this.mRecipeList.size() - 1).getTitle().equals(LOADING)) {
+                this.mRecipeList.remove(this.mRecipeList.size() - 1);
+            }
+            notifyDataSetChanged();
+        }
+    }
+
     public void setQueryExhausted() {
         hideLoading();
         Recipe exhaustedRecipe = new Recipe();
         exhaustedRecipe.setTitle(EXHAUSTED);
         mRecipeList.add(exhaustedRecipe);
         notifyDataSetChanged();
-    }
-
-    private void hideLoading() {
-        if (isLoading()) {
-            for (Recipe recipe : mRecipeList) {
-                if (recipe.getTitle().equals(LOADING)) {
-                    mRecipeList.remove(recipe);
-                }
-            }
-            notifyDataSetChanged();
-        }
     }
 
     public void displayCategories() {
@@ -151,22 +187,24 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         notifyDataSetChanged();
     }
 
-    public void displayLoading() {
-        if (!isLoading()) {
-            Recipe recipe = new Recipe();
-            recipe.setTitle(LOADING);
-            List<Recipe> recipes = new ArrayList<>();
-            recipes.add(recipe);
-            mRecipeList = recipes;
-            notifyDataSetChanged();
-        }
-    }
 
+    /**
+     * -------------------------------- HELPER METHODS
+     */
     private boolean isLoading() {
         if (mRecipeList != null && mRecipeList.size() > 0) {
             return mRecipeList.get(mRecipeList.size() - 1).getTitle().equals(LOADING);
         }
         return false;
+    }
+
+    private void clearRecipesList() {
+        if (this.mRecipeList != null) {
+            this.mRecipeList.clear();
+        } else {
+            this.mRecipeList = new ArrayList<>();
+        }
+        notifyDataSetChanged();
     }
 
     public void setRecipeList(List<Recipe> recipeList) {

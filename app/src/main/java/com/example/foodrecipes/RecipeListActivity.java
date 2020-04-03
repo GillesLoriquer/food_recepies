@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.ViewModelProvider;
@@ -14,10 +15,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.foodrecipes.adapter.OnRecipeListener;
 import com.example.foodrecipes.adapter.RecipeRecyclerAdapter;
 import com.example.foodrecipes.model.Recipe;
-import com.example.foodrecipes.util.Testing;
 import com.example.foodrecipes.util.VerticalSpacingItemDecorator;
 import com.example.foodrecipes.viewmodel.RecipeListViewModel;
 import com.example.foodrecipes.viewmodel.RecipeListViewModelFactory;
+
+import static com.example.foodrecipes.viewmodel.RecipeListViewModel.QUERY_EXHAUSTED;
 
 public class RecipeListActivity extends BaseActivity implements OnRecipeListener {
 
@@ -135,8 +137,36 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
                 Log.d(TAG, "subscribeObservers: ----------------------- status " + listResource.status);
 
                 if (listResource.data != null) {
-                    Testing.printRecepies(listResource.data, "data");
-                    this.mRecyclerAdapter.setRecipeList(listResource.data);
+                    switch (listResource.status) {
+                        case LOADING: {
+                            if (mRecipeListViewModel.getPageNumber() > 1) {
+                                mRecyclerAdapter.displayLoading();
+                            } else {
+                                mRecyclerAdapter.displayOnlyLoading();
+                            }
+                            break;
+                        }
+                        case ERROR: {
+                            Log.e(TAG, "subscribeObservers: cannot refresh the cache.");
+                            Log.e(TAG, "subscribeObservers: ERROR message: " + listResource.message);
+                            Log.e(TAG, "subscribeObservers: status: ERROR, #recipes: " + listResource.data.size());
+                            mRecyclerAdapter.hideLoading();
+                            mRecyclerAdapter.setRecipeList(listResource.data);
+                            Toast.makeText(RecipeListActivity.this, listResource.message, Toast.LENGTH_SHORT).show();
+
+                            if (listResource.message.equals(QUERY_EXHAUSTED)) {
+                                mRecyclerAdapter.setQueryExhausted();
+                            }
+                            break;
+                        }
+                        case SUCCESS: {
+                            Log.e(TAG, "subscribeObservers: cache has been refreshed.");
+                            Log.e(TAG, "subscribeObservers: status: SUCCESS, #recipes: " + listResource.data.size());
+                            mRecyclerAdapter.hideLoading();
+                            mRecyclerAdapter.setRecipeList(listResource.data);
+                            break;
+                        }
+                    }
                 }
             }
         });
