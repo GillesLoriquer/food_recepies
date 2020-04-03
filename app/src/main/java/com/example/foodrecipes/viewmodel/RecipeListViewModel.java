@@ -1,6 +1,7 @@
 package com.example.foodrecipes.viewmodel;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -22,6 +23,8 @@ public class RecipeListViewModel extends AndroidViewModel {
      */
     private static final String TAG = "RecipeListViewModel";
 
+    private static final String QUERY_EXHAUSTED = "No more result.";
+
     public enum ViewState {CATEGORIES, RECIPES}
 
     private MutableLiveData<ViewState> mViewState;
@@ -29,6 +32,14 @@ public class RecipeListViewModel extends AndroidViewModel {
     private RecipeRepository mRecipeRepository;
 
     private MediatorLiveData<Resource<List<Recipe>>> mRecipes = new MediatorLiveData<>();
+
+    private boolean mIsPerformingQuery;
+
+    private boolean mIsQueryExhausted;
+
+    private String mQuery;
+
+    private int mPageNumber;
 
     /**
      * -------------------------------- CONSTRUCTOR
@@ -65,9 +76,46 @@ public class RecipeListViewModel extends AndroidViewModel {
     }
 
     public void searchRecipesApi(String query, int pageNumber) {
-        final LiveData<Resource<List<Recipe>>> repositoryDataSource =
-                mRecipeRepository.searchRecipesApi(query, pageNumber);
+        if (!mIsPerformingQuery) {
+            this.mPageNumber = pageNumber == 0 ? 1 : pageNumber;     // page 0 et 1 affiche le même résultat
+            this.mQuery = query;
+            this.mIsQueryExhausted = false;
+            executeSearch();
+        }
+    }
 
-        mRecipes.addSource(repositoryDataSource, listResource -> mRecipes.setValue(listResource));
+    private void executeSearch() {
+        this.mIsPerformingQuery = true;
+        this.mViewState.setValue(ViewState.RECIPES);
+
+        final LiveData<Resource<List<Recipe>>> repositoryDataSource =
+                mRecipeRepository.searchRecipesApi(mQuery, mPageNumber);
+
+        mRecipes.addSource(repositoryDataSource, listResource -> {
+            if (listResource != null) {
+                this.mRecipes.setValue(listResource);
+                if (listResource.status == Resource.Status.SUCCESS) {
+                    this.mIsPerformingQuery = false;
+                    if (listResource.data != null) {
+                        if (listResource.data.size() == 0) {
+                            Log.d(TAG, "executeSearch: query is exhausted");
+                            this.mRecipes.setValue(
+                                    new Resource<>(
+                                            Resource.Status.ERROR,
+                                            listResource.data,
+                                            QUERY_EXHAUSTED
+                                    )
+                            );
+                        }
+                    }
+                    this.mRecipes.removeSource(repositoryDataSource);
+                } else if (listResource.status == Resource.Status.ERROR) {
+                    this.mIsPerformingQuery = false;
+                    this.mRecipes.removeSource(repositoryDataSource);
+                }
+            } else {
+                this.mRecipes.removeSource(repositoryDataSource);
+            }
+        });
     }
 }

@@ -136,6 +136,7 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
 
                 if (listResource.data != null) {
                     Testing.printRecepies(listResource.data, "data");
+                    this.mRecyclerAdapter.setRecipeList(listResource.data);
                 }
             }
         });
