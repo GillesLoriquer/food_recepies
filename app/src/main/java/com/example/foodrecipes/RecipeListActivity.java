@@ -170,7 +170,7 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
                         break;
                     }
                     case RECIPES: {
-                        // TODO : recipes will show automatically from another observer
+                        // recipes will show automatically from another observer
                         break;
                     }
                 }
