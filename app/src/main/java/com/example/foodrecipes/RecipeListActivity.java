@@ -12,6 +12,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.foodrecipes.adapter.OnRecipeListener;
 import com.example.foodrecipes.adapter.RecipeRecyclerAdapter;
 import com.example.foodrecipes.model.Recipe;
@@ -94,12 +97,21 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
      * -------------------------------- METHODS
      */
     private void initRecyclerView() {
-        mRecyclerAdapter = new RecipeRecyclerAdapter(this);
+        mRecyclerAdapter = new RecipeRecyclerAdapter(this, getRequestManager());
         VerticalSpacingItemDecorator verticalSpacingItemDecorator =
                 new VerticalSpacingItemDecorator(30);
         mRecyclerView.addItemDecoration(verticalSpacingItemDecorator);
         mRecyclerView.setAdapter(mRecyclerAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private RequestManager getRequestManager() {
+        RequestOptions requestOptions = new RequestOptions()
+                .placeholder(R.drawable.white_background)
+                .error(R.drawable.white_background);
+
+        return Glide.with(this)
+                .setDefaultRequestOptions(requestOptions);
     }
 
     private void initSearchView() {
