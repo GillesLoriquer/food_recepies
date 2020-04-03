@@ -61,7 +61,7 @@ public class RecipeRepository {
                     int index = 0;
                     for (long rowId : mRecipeDao.insertRecipes((Recipe[]) item.getRecipes().toArray(recipes))) {
                         if (rowId == -1) {
-                            Log.d(TAG, "saveCallResult: CONFLICT. This recipe is already in cache");
+                            Log.d(TAG, "saveCallResult: CONFLICT. This recipe is already in cache : " + recipes[index].getTitle());
 
                             mRecipeDao.updateRecipe(
                                     recipes[index].getRecipeId(),

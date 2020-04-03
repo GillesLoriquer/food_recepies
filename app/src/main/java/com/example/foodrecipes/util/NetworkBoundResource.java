@@ -12,8 +12,6 @@ import androidx.lifecycle.MediatorLiveData;
 import com.example.foodrecipes.AppExecutors;
 import com.example.foodrecipes.network.response.ApiResponse;
 
-import java.util.Objects;
-
 // CacheObject: Type for the Resource data. (database cache)
 // RequestObject: Type for the API response. (network request)
 public abstract class NetworkBoundResource<CacheObject, RequestObject> {
@@ -46,10 +44,13 @@ public abstract class NetworkBoundResource<CacheObject, RequestObject> {
         final LiveData<CacheObject> dbSource = loadFromDb();
 
         results.addSource(dbSource, cacheObject -> {
+            // remove observer from local db. Need to decide if read local db or network
             results.removeSource(dbSource);
+
+            // get data from network if conditions in shouldFetch(boolean) are true
             if (shouldFetch(cacheObject)) {
                 fetchFromNetwork(dbSource);
-            } else {
+            } else { // otherwise read data from local db
                 results.addSource(dbSource,
                         cacheObject2 -> setValue(Resource.success(cacheObject2)));
             }
@@ -116,8 +117,7 @@ public abstract class NetworkBoundResource<CacheObject, RequestObject> {
     }
 
     private void setValue(Resource<CacheObject> newValue) {
-        // FIXME : opérateur de comparaison différent, valider le fonctionnement
-        if (!Objects.equals(results.getValue(), newValue)) {
+        if (results.getValue() != newValue) {
             results.setValue(newValue);
         }
     }

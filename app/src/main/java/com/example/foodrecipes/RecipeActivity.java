@@ -1,7 +1,6 @@
 package com.example.foodrecipes;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -44,26 +43,6 @@ public class RecipeActivity extends BaseActivity {
         mRecipeViewModel = new ViewModelProvider(this).get(RecipeViewModel.class);
 
         showProgressBar(true);
-
-        subscribeObservers();
-
-        getIncomingIntent();
-    }
-
-    private void subscribeObservers() {
-        mRecipeViewModel.getRecipe().observe(this, recipe -> {
-            if (recipe != null
-                    && recipe.getRecipeId().equals(mRecipeViewModel.getRecipeId())) {
-                setRecipeProperties(recipe);
-                mRecipeViewModel.setDidRetrieveRecipe(true);
-            }
-        });
-        mRecipeViewModel.isRecipeRequestTimeout().observe(this, isRecipeRequestTimeout -> {
-            if (isRecipeRequestTimeout && !mRecipeViewModel.getDidRetrieveRecipe()) {
-                showErrorScreen("Error retrieving recipe. Check your network connection.");
-                Log.d(TAG, "subscribeObservers: recipe request timeout");
-            }
-        });
     }
 
     private void showErrorScreen(String errorMessage) {
@@ -83,13 +62,6 @@ public class RecipeActivity extends BaseActivity {
 
         showProgressBar(false);
         showParent();
-    }
-
-    private void getIncomingIntent() {
-        if (getIntent().hasExtra(RECIPE)) {
-            Recipe recipe = getIntent().getParcelableExtra(RECIPE);
-            mRecipeViewModel.searchRecipeApi(recipe.getRecipeId());
-        }
     }
 
     private void setRecipeProperties(Recipe recipe) {

@@ -2,6 +2,7 @@ package com.example.foodrecipes;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.foodrecipes.adapter.OnRecipeListener;
 import com.example.foodrecipes.adapter.RecipeRecyclerAdapter;
 import com.example.foodrecipes.model.Recipe;
+import com.example.foodrecipes.util.Testing;
 import com.example.foodrecipes.util.VerticalSpacingItemDecorator;
 import com.example.foodrecipes.viewmodel.RecipeListViewModel;
 import com.example.foodrecipes.viewmodel.RecipeListViewModelFactory;
@@ -83,7 +85,7 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
 
     @Override
     public void onCategoryClick(String category) {
-
+        searchRecipesApi(category);
     }
 
     /**
@@ -102,6 +104,7 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                searchRecipesApi(query);
                 return false;
             }
 
@@ -127,6 +130,19 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
                 }
             }
         });
+        mRecipeListViewModel.getRecipes().observe(this, listResource -> {
+            if (listResource != null) {
+                Log.d(TAG, "subscribeObservers: ----------------------- status " + listResource.status);
+
+                if (listResource.data != null) {
+                    Testing.printRecepies(listResource.data, "data");
+                }
+            }
+        });
+    }
+
+    private void searchRecipesApi(String query) {
+        mRecipeListViewModel.searchRecipesApi(query, 1);
     }
 
     private void displayCategories() {

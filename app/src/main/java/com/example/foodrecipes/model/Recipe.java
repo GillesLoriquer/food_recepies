@@ -11,8 +11,6 @@ import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 @Entity(tableName = "recipes")
 public class Recipe implements Parcelable {
 
@@ -29,7 +27,7 @@ public class Recipe implements Parcelable {
 
     private String publisher;
 
-    private List<String> ingredients;
+    private String[] ingredients;
 
     @ColumnInfo(name = "image_url")
     @SerializedName("image_url")
@@ -48,7 +46,7 @@ public class Recipe implements Parcelable {
         this.socialRank = 0.0D;
     }
 
-    public Recipe(@NonNull String recipeId, String title, String publisher, List<String> ingredients, String imageUrl, Double socialRank, int timestamp) {
+    public Recipe(@NonNull String recipeId, String title, String publisher, String[] ingredients, String imageUrl, Double socialRank, int timestamp) {
         this.recipeId = recipeId;
         this.title = title;
         this.publisher = publisher;
@@ -74,7 +72,7 @@ public class Recipe implements Parcelable {
         return publisher;
     }
 
-    public List<String> getIngredients() {
+    public String[] getIngredients() {
         return ingredients;
     }
 
@@ -105,7 +103,7 @@ public class Recipe implements Parcelable {
         this.publisher = publisher;
     }
 
-    public void setIngredients(List<String> ingredients) {
+    public void setIngredients(String[] ingredients) {
         this.ingredients = ingredients;
     }
 
@@ -150,7 +148,7 @@ public class Recipe implements Parcelable {
         dest.writeString(recipeId);
         dest.writeString(title);
         dest.writeString(publisher);
-        dest.writeStringList(ingredients);
+        dest.writeArray(ingredients);
         dest.writeString(imageUrl);
         if (socialRank == null) {
             dest.writeByte((byte) 0);
@@ -165,7 +163,7 @@ public class Recipe implements Parcelable {
         recipeId = in.readString();
         title = in.readString();
         publisher = in.readString();
-        ingredients = in.createStringArrayList();
+        ingredients = in.createStringArray();
         imageUrl = in.readString();
         if (in.readByte() == 0) {
             socialRank = null;
