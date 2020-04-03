@@ -99,6 +99,7 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
         if (mRecipeListViewModel.getViewState().getValue() == RecipeListViewModel.ViewState.CATEGORIES) {
             super.onBackPressed();
         } else {
+            mRecipeListViewModel.cancelSearchRequest();
             mRecipeListViewModel.setViewCategories();
         }
     }
@@ -194,8 +195,8 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
                             break;
                         }
                         case SUCCESS: {
-                            Log.e(TAG, "subscribeObservers: cache has been refreshed.");
-                            Log.e(TAG, "subscribeObservers: status: SUCCESS, #recipes: " + listResource.data.size());
+                            Log.d(TAG, "subscribeObservers: cache has been refreshed.");
+                            Log.d(TAG, "subscribeObservers: status: SUCCESS, #recipes: " + listResource.data.size());
                             mRecyclerAdapter.hideLoading();
                             mRecyclerAdapter.setRecipeList(listResource.data);
                             break;

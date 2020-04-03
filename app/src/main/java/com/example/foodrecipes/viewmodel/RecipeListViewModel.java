@@ -41,6 +41,8 @@ public class RecipeListViewModel extends AndroidViewModel {
 
     private int mPageNumber;
 
+    private boolean mCancelRequest;
+
     /**
      * -------------------------------- CONSTRUCTOR
      */
@@ -89,6 +91,7 @@ public class RecipeListViewModel extends AndroidViewModel {
     }
 
     private void executeSearch() {
+        this.mCancelRequest = false;
         this.mIsPerformingQuery = true;
         this.mViewState.setValue(ViewState.RECIPES);
 
@@ -96,31 +99,44 @@ public class RecipeListViewModel extends AndroidViewModel {
                 mRecipeRepository.searchRecipesApi(mQuery, mPageNumber);
 
         mRecipes.addSource(repositoryDataSource, listResource -> {
-            if (listResource != null) {
-                this.mRecipes.setValue(listResource);
-                if (listResource.status == Resource.Status.SUCCESS) {
-                    this.mIsPerformingQuery = false;
-                    if (listResource.data != null) {
-                        if (listResource.data.size() == 0) {
-                            Log.d(TAG, "executeSearch: query is exhausted");
-                            this.mRecipes.setValue(
-                                    new Resource<>(
-                                            Resource.Status.ERROR,
-                                            listResource.data,
-                                            QUERY_EXHAUSTED
-                                    )
-                            );
+            if (!mCancelRequest) {
+                if (listResource != null) {
+                    this.mRecipes.setValue(listResource);
+                    if (listResource.status == Resource.Status.SUCCESS) {
+                        this.mIsPerformingQuery = false;
+                        if (listResource.data != null) {
+                            if (listResource.data.size() == 0) {
+                                Log.d(TAG, "executeSearch: query is exhausted");
+                                this.mRecipes.setValue(
+                                        new Resource<>(
+                                                Resource.Status.ERROR,
+                                                listResource.data,
+                                                QUERY_EXHAUSTED
+                                        )
+                                );
+                            }
                         }
+                        this.mRecipes.removeSource(repositoryDataSource);
+                    } else if (listResource.status == Resource.Status.ERROR) {
+                        this.mIsPerformingQuery = false;
+                        this.mRecipes.removeSource(repositoryDataSource);
                     }
-                    this.mRecipes.removeSource(repositoryDataSource);
-                } else if (listResource.status == Resource.Status.ERROR) {
-                    this.mIsPerformingQuery = false;
+                } else {
                     this.mRecipes.removeSource(repositoryDataSource);
                 }
             } else {
                 this.mRecipes.removeSource(repositoryDataSource);
             }
         });
+    }
+
+    public void cancelSearchRequest() {
+        if (mIsPerformingQuery) {
+            Log.d(TAG, "cancelSearchRequest: cancelling the search request.");
+            this.mCancelRequest = true;
+            this.mIsPerformingQuery = false;
+            this.mPageNumber = 1;
+        }
     }
 
     public void searchNextPage() {
