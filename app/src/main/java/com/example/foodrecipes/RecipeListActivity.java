@@ -19,7 +19,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.foodrecipes.adapter.OnRecipeListener;
 import com.example.foodrecipes.adapter.RecipeRecyclerAdapter;
 import com.example.foodrecipes.model.Recipe;
-import com.example.foodrecipes.util.VerticalSpacingItemDecorator;
 import com.example.foodrecipes.viewmodel.RecipeListViewModel;
 import com.example.foodrecipes.viewmodel.RecipeListViewModelFactory;
 
@@ -109,9 +108,6 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
      */
     private void initRecyclerView() {
         mRecyclerAdapter = new RecipeRecyclerAdapter(this, getRequestManager());
-        VerticalSpacingItemDecorator verticalSpacingItemDecorator =
-                new VerticalSpacingItemDecorator(30);
-        mRecyclerView.addItemDecoration(verticalSpacingItemDecorator);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
