@@ -72,6 +72,9 @@ public class RecipeListViewModel extends AndroidViewModel {
     /**
      * -------------------------------- SETTERS
      */
+    public void setViewState(ViewState viewState) {
+        mViewState.setValue(viewState);
+    }
 
     /**
      * -------------------------------- METHODS

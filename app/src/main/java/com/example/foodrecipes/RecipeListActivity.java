@@ -69,7 +69,7 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_categories) {
-            displayCategories();
+            mRecipeListViewModel.setViewState(RecipeListViewModel.ViewState.CATEGORIES);
         }
         return super.onOptionsItemSelected(item);
     }
