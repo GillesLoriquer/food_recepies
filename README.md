@@ -1,6 +1,6 @@
 # FoodRecipes
 
-Application de recette de cuisine. Cette application est le résultat du cursus de formation disponible dispensé par Mitch TABIAN :
+Application de recette de cuisine réalisée en JAVA. Cette application est le résultat du cursus de formation dispensé par Mitch TABIAN :
 - https://github.com/mitchtabian/RestApiMVVM
 - https://github.com/mitchtabian/Local-db-Cache-Retrofit-REST-API-MVVM
 
@@ -84,14 +84,6 @@ Room
 - annotationProcessor "androidx.room:room-compiler:2.2.5"
 
 ## Captures d'écran
-<img src="./assets/1.png" width="200">
+<img src="./assets/1.png" width="200">  <img src="./assets/2.png" width="200">  <img src="./assets/3.png" width="200">
 
-<img src="./assets/2.png" width="200">
-
-<img src="./assets/3.png" width="200">
-
-<img src="./assets/4.png" width="200">
-
-<img src="./assets/5.png" width="200">
-
-<img src="./assets/6.png" width="200">
+<img src="./assets/4.png" width="200">  <img src="./assets/5.png" width="200">  <img src="./assets/6.png" width="200">
